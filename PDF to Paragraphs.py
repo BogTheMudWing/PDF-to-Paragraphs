@@ -1,11 +1,15 @@
 import fitz
 import json
 
-def extract_text_by_indent(pdf_path, indent_threshold=5):
+def extract_text_by_indent(pdf_path):
     doc = fitz.open(pdf_path)
     paragraphs = []
     current_paragraph = []
+    base_x = None
+    indented_x = None
     previous_x = None
+
+    current_page = 0
 
     for page in doc:
         blocks = page.get_text("blocks")
@@ -17,11 +21,38 @@ def extract_text_by_indent(pdf_path, indent_threshold=5):
 
             if text:
                 is_new_paragraph = False
+                set_base_x = False
+                clear_base_x = False
+                set_indented_x = False
 
-                if previous_x is None:
-                    is_new_paragraph = True
+                if base_x == None:
+                    set_base_x = True
+                    is_new_paragraph = False
                 else:
-                    is_new_paragraph = x0 - previous_x > indent_threshold
+                    if x0 - base_x < 0.1 and x0 - base_x > -0.1:
+                        is_new_paragraph = False
+                    else:
+                        if indented_x is None:
+                            if x0 - base_x > 0:
+                                set_indented_x = True
+                                clear_base_x = True
+                                is_new_paragraph = True
+                            else:
+                                set_base_x = True
+                                is_new_paragraph = False
+                        else:
+                            if x0 - indented_x < 0.1 and x0 - indented_x > -0.1:
+                                is_new_paragraph = True
+                            else:
+                                if x0 - base_x > 0:
+                                    set_indented_x = True
+                                    clear_base_x = True
+                                    is_new_paragraph = True
+                                else:
+                                    set_base_x = True
+                                    is_new_paragraph = False
+
+                # print("Page " + str(current_page) + " block " + str(i) + ": x0=" + str(x0) + ", base_x=" + str(base_x) + ", indented_x=" + str(indented_x) + ", new_paragraph=" + str(is_new_paragraph))
 
                 if is_new_paragraph:
                     if current_paragraph:
@@ -29,8 +60,17 @@ def extract_text_by_indent(pdf_path, indent_threshold=5):
                     current_paragraph = [text]
                 else:
                     current_paragraph.append(text)
+                
+                if set_base_x:
+                    base_x = x0
+                if clear_base_x:
+                    base_x = None
+                if set_indented_x:
+                    indented_x = x0
 
-                previous_x = x0
+            previous_x = x0
+
+        current_page = current_page + 1
 
     return paragraphs
 
