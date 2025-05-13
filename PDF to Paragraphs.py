@@ -1,13 +1,13 @@
+from typing_extensions import Iterator
 import fitz
 import json
 
 def extract_text_by_indent(pdf_path):
     doc = fitz.open(pdf_path)
-    paragraphs = []
+    paragraphs: list[str] = []
     current_paragraph = []
     base_x = None
     indented_x = None
-    previous_x = None
 
     current_page = 0
 
@@ -52,23 +52,30 @@ def extract_text_by_indent(pdf_path):
                                     set_base_x = True
                                     is_new_paragraph = False
 
-                # print("Page " + str(current_page) + " block " + str(i) + ": x0=" + str(x0) + ", base_x=" + str(base_x) + ", indented_x=" + str(indented_x) + ", new_paragraph=" + str(is_new_paragraph))
+                # print("Page " + str(current_page) + " block " + str(i) + ": x0=" + str(x0) + ", base_x=" + str(base_x) + ", indented_x=" + str(indented_x) + ", new_paragraph=" + str(is_new_paragraph) + ": " + str(text))
+
+                lines = text.split("\n")
+
+                for line in lines:
+                    print(line)
 
                 if is_new_paragraph:
                     if current_paragraph:
                         paragraphs.append(" ".join(current_paragraph).strip())
-                    current_paragraph = [text]
+                    for i, line in enumerate(lines):
+                        if i == len(lines) - 1:
+                            current_paragraph = [line]
+                        else:
+                            paragraphs.append("".join(line).strip())
                 else:
                     current_paragraph.append(text)
-                
+
                 if set_base_x:
                     base_x = x0
                 if clear_base_x:
                     base_x = None
                 if set_indented_x:
                     indented_x = x0
-
-            previous_x = x0
 
         current_page = current_page + 1
 
