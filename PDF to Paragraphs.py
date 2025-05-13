@@ -1,4 +1,3 @@
-from typing_extensions import Iterator
 import fitz
 import json
 
