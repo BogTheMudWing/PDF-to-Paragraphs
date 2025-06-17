@@ -13,3 +13,7 @@ Unfortunately, PDFs are not very computer-friendly, and so the paragraphs must b
 Once you have downloaded the script, you'll need to install pymupdf using your package manager. This depends on your operating system, so do some searching for instructions on how to do this.
 
 After that, open a terminal and run the script. It will ask you for the PDF file. It is easiest to have the PDF in the same folder as the script. Then, just type the name into the prompt (including the .pdf file extension), and it will create or overwrite output.json.
+
+---
+
+[![BogTheMudWing](https://nextcloud.macver.org/apps/files_sharing/publicpreview/jyWLnm4i724mxXg?file=/&fileId=61792&x=3390&y=1906&a=true&etag=c43260166526abc326861afd5244df8e)](https://blog.macver.org/about-me)
